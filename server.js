@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const fs = require('fs');
-const {FieldValue} = require('firebase-admin/firestore')
+const {FieldValue, getFirestore} = require('firebase-admin/firestore')
 app.use(cors());
 app.use(express.json());
 
@@ -13,16 +13,28 @@ app.listen(port, () => {
 
 
 var admin = require("firebase-admin");
+var serviceAccount;
+var fitxer;
+var db;
+fs.readFile('./ConnexioBD','utf-8',(error, contingut)=> {
+    if (error){
+        console.error(error);
+        return;
+    }else {
+        fitxer = contingut;
+        serviceAccount = require(fitxer);
+        console.log(serviceAccount)
+        const {getFirestore} = require("firebase-admin/firestore");
+        const {firestore} = require("firebase-admin");
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+        db = getFirestore();
+        dbConnection();
+    }
+}) ;
 
-var serviceAccount = require("./book-net-eb5c1-firebase-adminsdk-atp4r-064fe385bd.json");
-const {getFirestore} = require("firebase-admin/firestore");
-const {firestore} = require("firebase-admin");
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
-const db = getFirestore();
-    dbConnection();
 
 async function dbConnection(){
     const conn = db.collection("book-net").doc("clients");
