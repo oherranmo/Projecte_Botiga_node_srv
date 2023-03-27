@@ -23,7 +23,6 @@ fs.readFile('./ConnexioBD','utf-8',(error, contingut)=> {
     }else {
         fitxer = contingut;
         serviceAccount = require(fitxer);
-        console.log(serviceAccount)
         const {getFirestore} = require("firebase-admin/firestore");
         const {firestore} = require("firebase-admin");
         admin.initializeApp({
