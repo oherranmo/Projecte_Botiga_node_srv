@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const fs = require('fs');
 const {FieldValue, getFirestore} = require('firebase-admin/firestore')
+const mysql = require('mysql');
 app.use(cors());
 app.use(express.json());
 
@@ -11,6 +12,18 @@ app.listen(port, () => {
     console.log(`Server listening on the port::${port}`);
 });
 
+//connectar bd relacional Mysql____
+const connectionMysql = mysql.createConnection({
+    host: 'localhost', //Canviar per ip del servidor un cop estigui el node alla?
+    user: 'root',
+    password: 'admin',
+    database: 'projecta_botiga'
+});
+connectionMysql.connect((err)=>{
+    if (err) throw err;
+    console.log('Connectat!');
+});
+//______________________________________
 
 var admin = require("firebase-admin");
 var serviceAccount;
@@ -115,5 +128,16 @@ app.post('/log',(req,res)=>{
     let segons = data.getSeconds();
     let data_completa = `${dia}${mes}${any}${hora}${minuts}${segons}`;
     fs.writeFileSync(`log/${req.body.log}.log`, `${data_completa} ${req.body.text}\n`,{flag:'a+'});
+})
+
+// Projecte Botiga A5
+
+
+//Prova de connexio a bd mysql
+app.get('/provaSelect',(req,res)=>{
+    connectionMysql.query("SELECT * FROM projecta_botiga.productes",(err,rows)=>{
+        if(err) throw err;
+        res.json(rows);
+    })
 })
 
