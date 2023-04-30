@@ -21,7 +21,7 @@ const connectionMysql = mysql.createConnection({
 });
 connectionMysql.connect((err)=>{
     if (err) throw err;
-    console.log('Connectat!');
+    console.log('Connectat a la BDD!');
 });
 //______________________________________
 
@@ -133,11 +133,22 @@ app.post('/log',(req,res)=>{
 // Projecte Botiga A5
 
 
-//Prova de connexio a bd mysql
-app.get('/provaSelect',(req,res)=>{
-    connectionMysql.query("SELECT * FROM projecta_botiga.productes",(err,rows)=>{
-        if(err) throw err;
-        res.json(rows);
-    })
-})
+app.get('/productes', (req, res) => {
+    connectionMysql.query('SELECT * FROM projecta_botiga.productes_botiga', (error, results) => {
+        if (error) throw error;
+        res.send(results);
+    });
+});
+
+app.post('/log/compraproductes', (req, res) => {
+        const query = req.body.query;
+        const values = req.body.values;
+        connectionMysql.query(query,values, (err, result)=>{
+            if (err){
+                res.status(500).send(`Error: ${err}`);
+            }else{
+                res.send(`Registre inserit amb èxit`);
+            }
+        });
+});
 
