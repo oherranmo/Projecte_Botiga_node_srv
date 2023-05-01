@@ -4,6 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const {FieldValue, getFirestore} = require('firebase-admin/firestore')
 const mysql = require('mysql');
+require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
@@ -14,10 +15,10 @@ app.listen(port, () => {
 
 //connectar bd relacional Mysql____
 const connectionMysql = mysql.createConnection({
-    host: 'localhost', //Canviar per ip del servidor un cop estigui el node alla?
-    user: 'root',
-    password: 'admin',
-    database: 'projecta_botiga'
+    host: process.env.DB_HOST, //Canviar per ip del servidor un cop estigui el node alla?
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
 });
 connectionMysql.connect((err)=>{
     if (err) throw err;
@@ -26,6 +27,8 @@ connectionMysql.connect((err)=>{
 //______________________________________
 
 var admin = require("firebase-admin");
+const {request} = require("express");
+const Process = require("process");
 var serviceAccount;
 var fitxer;
 var db;
