@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const fs = require('fs');
+const multer = require('multer');
 const {FieldValue, getFirestore} = require('firebase-admin/firestore')
 const mysql = require('mysql');
 require('dotenv').config();
@@ -68,6 +69,15 @@ async function dbConnection(){
 
     }
 }
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'Imatges/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
 app.post('/signup', async (req, res) =>{
     const userResponse = await admin.auth().createUser({
         email: req.body.email,
@@ -84,7 +94,8 @@ app.post('/datausers',(req, res) => {
             Cognoms: req.body.Cognoms,
             Correu: req.body.Correu,
             Nom: req.body.Nom,
-            Telèfon: req.body.Telèfon})
+            Telèfon: req.body.Telèfon,
+            Rol: req.body.Rol})
     },{merge:true})
 })
 
@@ -95,7 +106,8 @@ app.post('/datausersdelete',(req, res) => {
             Cognoms: req.body.Cognoms,
             Correu: req.body.Correu,
             Nom: req.body.Nom,
-            Telèfon: req.body.Telèfon})
+            Telèfon: req.body.Telèfon,
+            Rol: req.body.Rol})
     })
 })
 
@@ -153,6 +165,32 @@ app.post('/log/compraproductes', (req, res) => {
                 res.send(`Registre inserit amb èxit`);
             }
         });
+});
+
+app.post('/afegirproducte', upload.single('imatge'), (req, res) => {
+    const nom = req.body.nom;
+    const descripcio = req.body.descripcio;
+    const preu = req.body.preu;
+    const categoria = req.body.categoria;
+
+    const file = req.file;
+    const filepath = `http://172.16.8.1:${port}/imatges/${file.originalname}`
+    fs.readFile(file.path, (err, data) => {
+        if (err) {
+            res.status(500).send('Error de lectura en el fitxer!');
+            return;
+        }
+        fs.writeFile(`imatges/${file.originalname}`, data, (err) => {
+            res.status(200).send('Imatge al server!');
+        });
+    });
+    const sql = 'INSERT INTO projecta_botiga.productes_botiga (nom, descripcio, preu, imatge, quantitat, categoria, rating) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const values = [nom, descripcio, preu, filepath, 1, categoria, 0];
+    connectionMysql.query(sql, values, (error, results, fields) => {
+        if (error) throw error;
+        console.log('Producte Afegit!');
+    });
+
 });
 
 app.get('/dadescompres', (req, res) => {
