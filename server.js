@@ -155,3 +155,10 @@ app.post('/log/compraproductes', (req, res) => {
         });
 });
 
+app.get('/dadescompres', (req, res) => {
+    connectionMysql.query('SELECT * FROM projecta_botiga.registres_compra', (error, results) => {
+        if (error) throw error;
+        res.json(results);
+    });
+});
+
