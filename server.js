@@ -129,8 +129,15 @@ app.post('/contacte', (req, res)=>{
 app.get('/imatges/:nom',(req,res)=>{
     const nomImatge = req.params.nom;
     const rutaImatge = `${__dirname}/Imatges/${nomImatge}`;
-    const stream = fs.createReadStream(rutaImatge);
-    stream.pipe(res);
+
+    fs.access(rutaImatge, fs.constants.F_OK, (err) => {
+        if (err) {
+            res.status(404).send(`No s'ha trobat la fofo`);
+            return;
+        }
+        const stream = fs.createReadStream(rutaImatge);
+        stream.pipe(res);
+    });
 })
 
 app.post('/log',(req,res)=>{
