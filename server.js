@@ -175,6 +175,7 @@ app.post('/log/compraproductes', (req, res) => {
 });
 
 app.post('/afegirproducte', upload.single('imatge'), (req, res) => {
+
     const nom = req.body.nom;
     const descripcio = req.body.descripcio;
     const preu = req.body.preu;
@@ -191,11 +192,17 @@ app.post('/afegirproducte', upload.single('imatge'), (req, res) => {
             res.status(200).send('Imatge al server!');
         });
     });
-    const sql = 'INSERT INTO projecta_botiga.productes_botiga (nom, descripcio, preu, imatge, quantitat, categoria, rating) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    const values = [nom, descripcio, preu, filepath, 1, categoria, 0];
-    connectionMysql.query(sql, values, (error, results, fields) => {
+    const sql = 'INSERT INTO projecta_botiga.productes_botiga (id, nom, descripcio, preu, imatge, quantitat, categoria, rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    connectionMysql.query('SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM projecta_botiga.productes_botiga', (error, results, fields) => {
         if (error) throw error;
-        console.log('Producte Afegit!');
+
+        const nextId = results[0].next_id;
+
+        const values = [nextId, nom, descripcio, preu, filepath, 1, categoria, 0];
+        connectionMysql.query(sql, values, (error, results, fields) => {
+            if (error) throw error;
+            console.log('Producte Afegit!');
+        });
     });
 
 });
