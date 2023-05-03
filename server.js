@@ -179,6 +179,7 @@ app.post('/afegirproducte', upload.single('imatge'), (req, res) => {
     const nom = req.body.nom;
     const descripcio = req.body.descripcio;
     const preu = req.body.preu;
+    const oferta = req.body.oferta === '1' ? true : false;
     const categoria = req.body.categoria;
 
     const file = req.file;
@@ -192,13 +193,13 @@ app.post('/afegirproducte', upload.single('imatge'), (req, res) => {
             res.status(200).send('Imatge al server!');
         });
     });
-    const sql = 'INSERT INTO projecta_botiga.productes_botiga (id, nom, descripcio, preu, imatge, quantitat, categoria, rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO projecta_botiga.productes_botiga (id, nom, descripcio, preu, imatge, quantitat, categoria, rating, oferta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     connectionMysql.query('SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM projecta_botiga.productes_botiga', (error, results, fields) => {
         if (error) throw error;
 
         const nextId = results[0].next_id;
 
-        const values = [nextId, nom, descripcio, preu, filepath, 1, categoria, 0];
+        const values = [nextId, nom, descripcio, preu, filepath, 1, categoria, 0, oferta];
         connectionMysql.query(sql, values, (error, results, fields) => {
             if (error) throw error;
             console.log('Producte Afegit!');
@@ -211,6 +212,13 @@ app.get('/dadescompres', (req, res) => {
     connectionMysql.query('SELECT * FROM projecta_botiga.registres_compra', (error, results) => {
         if (error) throw error;
         res.json(results);
+    });
+});
+app.delete('/eliminarproducte/:id', (req, res) => {
+    const id = req.params.id;
+    connectionMysql.query('DELETE FROM projecta_botiga.productes_botiga WHERE id = ?', [id], (error, results, fields) => {
+        if (error) throw error;
+        res.send('Producte eliminat!');
     });
 });
 
