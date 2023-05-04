@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-231.8770.65">
+  <component name="dataSourceStorageLocal" created-in="IU-231.8109.175">
     <data-source name="projecta_botiga@localhost" uuid="70c5c523-9874-46b4-968e-42110068fd3e">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" exact-version="0" />
       <secret-storage>forget</secret-storage>
